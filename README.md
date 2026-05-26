@@ -43,5 +43,13 @@ Solver configuration passed to `Kinematics`. All fields have defaults.
 | `diag_reg` | `0.0` | QP diagonal regularization |
 | `dt` | `0.1` | Integration timestep per iteration |
 | `max_iters` | `5` | IK iterations per solve |
+| `velocity_limits` | `None` | Per-joint velocity caps in mink units (`None` = disabled) |
+| `avoid_collisions` | `False` | Enable the mink `CollisionAvoidanceLimit` (CBF) in the QP |
+| `collision_margin` | `0.005` | Minimum clearance kept between geoms, meters |
+| `collision_sensor` | `0.02` | Detection band at which the barrier engages, meters |
 
 Build from CLI args with `register_ik_args` + `ik_params_from_args`:
+
+Pass `--vel-scale S` to enable velocity limits: each arm joint is capped at `ARM_JOINT_VELOCITY_LIMITS_RAD_S × S` (rad/s preset in `config.py`), converted to mink units via `--tick-hz`. Omit `--vel-scale` to disable.
+
+Pass `--avoid-collisions` to add a `CollisionAvoidanceLimit` (control barrier function) to the IK QP, keeping the arms clear of each other, the body, and the environment. `--collision-margin` sets the minimum clearance maintained between geoms; `--collision-sensor` sets the detection band at which the barrier starts acting and must exceed the margin. Collision geom pairs are built automatically from the model by `geom_pairs_for_arms`. Omit `--avoid-collisions` to disable.
